@@ -44,10 +44,8 @@ exports.addRatingBook = async (req, res, next) => {
 
     book.ratings.push({ userId, grade: rating });
 
-    // Sauvegarder la nouvelle note
     await book.save();
 
-    // Recalculer la moyenne des notes avec l'agrégateur $avg
     const updatedBook = await Book.aggregate([
       { $match: { _id: book._id } },
       { $unwind: "$ratings" },
@@ -59,12 +57,10 @@ exports.addRatingBook = async (req, res, next) => {
       },
     ]);
 
-    // Mettre à jour la moyenne du livre
     const averageRating =
       updatedBook.length > 0 ? updatedBook[0].averageRating : 0;
     book.averageRating = averageRating;
 
-    // Sauvegarder les modifications
     await book.save();
 
     res.status(200).json(book);
@@ -87,7 +83,7 @@ exports.modifyBook = (req, res, next) => {
   Book.findOne({ _id: req.params.id })
     .then((book) => {
       if (book.userId != req.auth.userId) {
-        res.status(401).json({ message: "Not authorized" });
+        res.status(403).json({ message: "Not authorized" });
       } else {
         Book.updateOne(
           { _id: req.params.id },
@@ -106,7 +102,7 @@ exports.deleteBook = (req, res, next) => {
   Book.findOne({ _id: req.params.id })
     .then((book) => {
       if (book.userId != req.auth.userId) {
-        res.status(401).json({ message: "Not authorized" });
+        res.status(403).json({ message: "Not authorized" });
       } else {
         const filename = book.imageUrl.split("/images/")[1];
         fs.unlink(`images/${filename}`, () => {
