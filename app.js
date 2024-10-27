@@ -8,7 +8,7 @@ const bookRoutes = require("./routes/book");
 const userRoutes = require("./routes/user");
 
 const app = express();
-console.log(process.env.MONGODB);
+
 mongoose
   .connect(process.env.MONGODB, {
     useNewUrlParser: true,

@@ -136,7 +136,6 @@ exports.getBestRatings = async (req, res, next) => {
     .sort({ averageRating: -1 })
     .limit(3)
     .then((bestBooks) => {
-      console.log(bestBooks);
       res.status(200).json(bestBooks);
     })
     .catch((error) => res.status(400).json({ error }));
